@@ -14,3 +14,11 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Node modules and package files
+node_modules/
+package.json
+package-lock.json
+
+# Test files
+responsive-test.html
