@@ -59,6 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function highlightNavigation() {
         const scrollY = window.pageYOffset;
+        const navLinks = document.querySelectorAll('.nav-menu a');
         
         sections.forEach(section => {
             const sectionHeight = section.offsetHeight;
@@ -75,7 +76,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    window.addEventListener('scroll', highlightNavigation);
+    // Debounce function for performance
+    function debounce(func, wait = 10) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    const debouncedHighlightNavigation = debounce(highlightNavigation, 10);
+    window.addEventListener('scroll', debouncedHighlightNavigation);
 
     // Navbar background on scroll
     const navbar = document.querySelector('.navbar');
@@ -199,39 +214,3 @@ document.addEventListener('keydown', function(e) {
         }
     }
 });
-
-// Performance: Debounce scroll events
-function debounce(func, wait = 10) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
-// Apply debounce to scroll handlers
-const debouncedHighlightNavigation = debounce(function() {
-    const sections = document.querySelectorAll('section[id]');
-    const navLinks = document.querySelectorAll('.nav-menu a');
-    const scrollY = window.pageYOffset;
-    
-    sections.forEach(section => {
-        const sectionHeight = section.offsetHeight;
-        const sectionTop = section.offsetTop - 100;
-        const sectionId = section.getAttribute('id');
-        const navLink = document.querySelector(`.nav-menu a[href="#${sectionId}"]`);
-        
-        if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
-            navLinks.forEach(link => link.classList.remove('active'));
-            if (navLink) {
-                navLink.classList.add('active');
-            }
-        }
-    });
-}, 10);
-
-window.addEventListener('scroll', debouncedHighlightNavigation);
